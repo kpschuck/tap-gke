@@ -1,0 +1,61 @@
+profile: full
+ceip_policy_disclosed: true
+buildservice:
+  kp_default_repository: "gcr.io/your-gke-project/build-service"
+  kp_default_repository_username: "_json_key"
+  kp_default_repository_password: >
+    {
+      "type": "service_account",
+      "project_id": "your-gke-project",
+      "private_key_id": "7a78cfe6bed976ac333897486d2c407eb3a9784d",
+      "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIAAQC4gPCtG7hV7YZH\n6lU/aiQWA0MDXSUMIKvfQArxa7+E0D8FOUcyxBnP8HacU3eRPZZE95V21i/A1RmJ\nGLpQIBPoD4Plj6fW5Mr30+kt62XzKWN/83M3SYW6AgP6mRhXwh7ZFf4cRxQaPbCK\n7lI6amkSaiIJCaeM4qGYpYfWMhrOhA3xRJdKyTT9C3YC5tRa+ALUYE+T9yrL/jV3\nJ9qf1eU22t3QzTvK1VNwTSlQI13WAluaojnC5jQX95pwhn7ryP8kUC4G4GTB+gTw\nv4YHISmQnppfQI9RNLa9DKxCkAM+Qcm6FaggUvtp6tafb9tnVLlnZMIk8vRKFfZK\nwuoYKxE/AgMBAAECggEAO/nuQteX/I8Er6wFOjAOuvkkd5t3x5F3TYNMC16zS0FG\nuzP7aQ1GNso8RGT9oUEb8B9rfs3xiAW930sihZln3y/r+FvSe5C0Sgug6UR0R69U\noOtKsNY9mlG9aWELALwhuv/jMt4IMt+K3B7MrCCbN1k45yc0SCAD19M3bPGstSS6\n3SWOE1Fm0Tp2/zaVzd1+h6oQaxR+7lsmui1ql090hCsFseTlf41G34qSiT7W0qt3\n6WDkpC0r636zSmFaSkRVd5dMDkVdDdJ0X4tdIXg76lQqNjx3GI2dAkEo4675YZAQ\nJrd1Nl3IHj6bwI91+BaijflHnb/e2GnJnfUBXy+HwQKBgQDhx1dyznLFBk91N69u\nQ2lNF7LV5wQz5eEC+gVO3DZW8RkbLPTJJ1wsJ7C2KaGzvoZp5U4kOTYbhgpB2kJt\nuNpZcP90VNUWiln8aGekY0qQahcPh+We3EU4D0cTS4s1HMG/OeLQ7vUv9cnyg2lm\ntEqw6dBtCxKDe2FTOPThves1xQKBgQDRMz8CJ/Cbk4K0ow/sn6QYNeSneARvs+h0\nqOvitPyQ0xOkfdeXBOr+LWNrICUvN3f4w4vdVfJtD+zIqgNpBTCY3iIOtJ9nwArn\n63VvFqbaGuWBS5hNvaan68yTz8xpL4SigBtu6mKF/3B26c48d6uZf6X0HYkxjI8e\n/KwbJOKfMwKBgQCTsIg9q1pcE5KqhLCXGjWpnlT3o1SWdktIXTBXs6lAGhpoMnI1\nmy+qGpR3tKf4Iite3gbNnzcLrhTLmvBVQdRjKY2RFWUGh53xhII3gFPoP92x5R2J\nW2FUGHpP3tzC83qxkjYSoh11L/zYTKoH6uvo6inTCqkjpPO3MszNViSkWQKBgHmp\n1gEI/VNdTGyFUKOKjEJQRXRnxhy4gn4mJ1knbKNFPm0xiooXoBrGhsUsYrO9DJau\nEs9cRqrK0ig5R9Zx4DtnJGNtBC+wbidGtnsur0a00biKID9GBoAuEEH+XaDms7pV\nyp6MzVOkpOFjRD/CURfqNrdr3fflCO86f1Uh9HIlAoGAJgTX5NFxawDDPlUris0q\nO0bF+FZ8xEw4lIzG8AVpM0n4dyh3aODSmL/nZMQdhiLX2r1UjdHGCaZWjLmiJwgL\nFpwDcJVDEnO7AySZc1tabrx7231rEDfJmyevydMcloHTn3zvq82FwI2xY77L8fQY\nZ66/DI0Bak2QkpaRNm+8Bro=\n-----END PRIVATE KEY-----\n",
+      "client_email": "gke-admin@your-gke-project.iam.gserviceaccount.com",
+      "client_id": "920860399799410625148",
+      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+      "token_uri": "https://oauth2.googleapis.com/token",
+      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+      "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/gke-admin%40your-gke-project.iam.gserviceaccount.com"
+    }
+  tanzunet_username: "your-tanzu-network-email@example.com"
+  tanzunet_password: "your-tanzu-network-password"
+  descriptor_name: "tap-1.0.0-full"
+  enable_automatic_dependency_updates: true
+supply_chain: basic
+
+ootb_supply_chain_basic:
+  registry:
+    server: "gcr.io"
+    repository: "your-gke-project/supply-chain"
+  gitops:
+    ssh_secret: ""
+
+learningcenter:
+  ingressDomain: "tap.example.com"
+
+tap_gui:
+  service_type: ClusterIP
+  ingressEnabled: "true"
+  ingressDomain: "tap.example.com"
+  app_config:
+    app:
+      baseUrl: http://tap-gui.tap.example.com
+    catalog:
+      locations:
+        - type: url
+          target: https://github.com/your-github-user/tap-gui-catalog/blob/main/yelb-catalog/catalog-info.yaml # obtain from https://network.pivotal.io/products/tanzu-application-platform/#/releases/1043418/file_groups/6091 and commit to github
+    backend:
+      baseUrl: http://tap-gui.tap.example.com
+      cors:
+        origin: http://tap-gui.tap.example.com
+
+metadata_store:
+  app_service_type: LoadBalancer # (optional) Defaults to LoadBalancer. Change to NodePort for distributions that don't support LoadBalancer
+
+grype:
+  namespace: "tap-install" # (optional) Defaults to default namespace.
+  targetImagePullSecret: "tap-registry"
+
+contour:
+  envoy:
+    service:
+      type: LoadBalancer
