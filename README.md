@@ -4,21 +4,6 @@
   * `gcloud` cli
     * https://cloud.google.com/sdk/docs/install
 
-## Create GKE Cluster
-```
-gcloud container clusters create tap-cluster \
-    --region=us-central1 \
-    --release-channel=rapid \
-    --cluster-version=1.23.2-gke.300 \
-    --num-nodes=2 \
-    --machine-type=n2-highcpu-4 \
-    --enable-autoprovisioning \
-    --min-cpu 24 \
-    --min-memory 24 \
-    --max-cpu 48 \
-    --max-memory 48
-```
-
 ## Create jumpbox (optional)
 ### Export GKE Project Environment
 ```
@@ -37,6 +22,10 @@ gcloud projects add-iam-policy-binding $GKE_PROJECT \
 gcloud projects add-iam-policy-binding $GKE_PROJECT \
     --member="serviceAccount:gke-admin@$GKE_PROJECT.iam.gserviceaccount.com" \
     --role="roles/cloudbuild.builds.builder"    
+
+gcloud projects add-iam-policy-binding $GKE_PROJECT \
+    --member="serviceAccount:gke-admin@$GKE_PROJECT.iam.gserviceaccount.com" \
+    --role="roles/iam.serviceAccountUser"
 ```
 
 ### Create Jumpbox
@@ -49,15 +38,31 @@ gcloud compute instances create tap-jump \
 --service-account="gke-admin@$GKE_PROJECT.iam.gserviceaccount.com"
 ```
 
-## Install Tools
-
-First, SSH to the jumpbox created earlier:
+## SSH to Jumpbox (optional)
+If you created the jumpbox in the previous section. SSH to it before continuing:
 ```
 gcloud compute ssh tap-jump
 sudo su -
 ```
 
-Next, export environment variables to be used in subsequent commands:
+## Create GKE Cluster
+```
+gcloud container clusters create tap-cluster \
+    --region=us-central1 \
+    --release-channel=rapid \
+    --cluster-version=1.23.2-gke.300 \
+    --num-nodes=2 \
+    --machine-type=n2-highcpu-4 \
+    --enable-autoprovisioning \
+    --min-cpu 24 \
+    --min-memory 24 \
+    --max-cpu 48 \
+    --max-memory 48
+```
+
+## Install Tools
+
+Export environment variables to be used in subsequent commands:
 ```
 export PIVNET_API_TOKEN=your-api-token
 export INSTALL_BUNDLE=registry.tanzu.vmware.com/tanzu-cluster-essentials/cluster-essentials-bundle@sha256:82dfaf70656b54dcba0d4def85ccae1578ff27054e7533d08320244af7fb0343
@@ -69,7 +74,7 @@ Where `INSTALL_REGISTRY_USERNAME` and `INSTALL_REGISTRY_PASSWORD` are your Tanzu
 
 ### Install kubectl
 ```
-curl -LO https://dl.k8s.io/release/v1.22.5/bin/linux/amd64/kubectl
+curl -LO https://dl.k8s.io/release/v1.23.3/bin/linux/amd64/kubectl
 mv kubectl /usr/local/bin
 chmod 755 /usr/local/bin/kubectl
 ```
@@ -168,14 +173,19 @@ tanzu plugin list
     ```
 
 ## Install Tanzu Application Platform
-Copy the `tap-full-profile-example.yml` and edit for your environment:
-```
-cp tap-full-profile-example.yml tap-full-profile.yml
-```
-Install TAP:
-```
-tanzu package install tap -p tap.tanzu.vmware.com -v 1.0.1 --values-file tap-full-profile.yml -n tap-install
-```
+
+1. Clone this repository
+    ```
+    git clone https://github.com/kpschuck/tap-gke.git
+    ```
+2. Copy the `tap-full-profile-example.yml` and edit for your environment:
+    ```
+    cp tap-gke/tap-full-profile-example.yml tap-full-profile.yml
+    ```
+3. Install TAP
+    ```
+    tanzu package install tap -p tap.tanzu.vmware.com -v 1.0.1 --values-file tap-full-profile.yml -n tap-install
+    ```
 
 ## Create DNS Record
 
