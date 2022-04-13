@@ -64,6 +64,8 @@ gcloud container clusters create tap-cluster \
 
 Export environment variables to be used in subsequent commands:
 ```
+export GKE_PROJECT=your-gke-project
+export TAP_VERSION=1.1.0
 export PIVNET_API_TOKEN=your-api-token
 export INSTALL_BUNDLE=registry.tanzu.vmware.com/tanzu-cluster-essentials/cluster-essentials-bundle@sha256:ab0a3539da241a6ea59c75c0743e9058511d7c56312ea3906178ec0f3491f51d
 export INSTALL_REGISTRY_HOSTNAME=registry.tanzu.vmware.com
@@ -71,6 +73,12 @@ export INSTALL_REGISTRY_USERNAME=your-registry-username
 export INSTALL_REGISTRY_PASSWORD=your-registry-password
 ```
 Where `INSTALL_REGISTRY_USERNAME` and `INSTALL_REGISTRY_PASSWORD` are your Tanzu Network credentials.
+
+### Install Docker
+```
+sudo apt-get update
+sudo apt-get install -y docker.io
+```
 
 ### Install kubectl
 ```
@@ -96,23 +104,25 @@ gcloud container clusters get-credentials tap-cluster --zone=us-central1
 ```
 pivnet download-product-files --product-slug='tanzu-cluster-essentials' --release-version='1.1.0' --product-file-id=1191987
 mkdir $HOME/tanzu-cluster-essentials
-tar -xvf tanzu-cluster-essentials-linux-amd64-1.1.0.tgz -C $HOME/tanzu-cluster-essentials
+tar -xvf tanzu-cluster-essentials-linux-amd64-${TAP_VERSION}.tgz -C $HOME/tanzu-cluster-essentials
 cd $HOME/tanzu-cluster-essentials
-./install.sh
+./install.sh --yes
 ```
 
-### Install `kapp` cli
+### Install `kapp` and `imgpkg` cli
 ```
 sudo cp $HOME/tanzu-cluster-essentials/kapp /usr/local/bin/kapp
+sudo cp $HOME/tanzu-cluster-essentials/imgpkg /usr/local/bin/imgpkg
 ```
 
 ### Install Tanzu cli
 ```
-pivnet download-product-files --product-slug='tanzu-application-platform' --release-version='1.0.1' --product-file-id=1147349
+cd ~
+pivnet download-product-files --product-slug='tanzu-application-platform' --release-version='1.1.0' --product-file-id=1190781
 mkdir $HOME/tanzu
 tar -xvf tanzu-framework-linux-amd64.tar -C $HOME/tanzu
 export TANZU_CLI_NO_INIT=true
-sudo install $HOME/tanzu/cli/core/v0.11.1/tanzu-core-linux_amd64 /usr/local/bin/tanzu
+sudo install $HOME/tanzu/cli/core/v0.11.2/tanzu-core-linux_amd64 /usr/local/bin/tanzu
 
 # install plugins
 tanzu plugin install --local $HOME/tanzu/cli all
@@ -120,6 +130,21 @@ tanzu plugin list
 ```
 
 ## Add the Tanzu Application Platform Package Repository
+### Relocate images to a registry (optional)
+Log into GCR Registry
+```
+docker login -u oauth2accesstoken -p "$(gcloud auth print-access-token)" https://gcr.io
+```
+
+Log into Tanzu Network Registry
+```
+docker login registry.tanzu.vmware.com
+```
+
+Relocate images
+```
+imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/tap-packages:${TAP_VERSION} --to-repo gcr.io/${GKE_PROJECT}/tap-packages
+```
 
 ### Configure TAP Repository
 1. Create a namespace named tap-install for deploying any component packages by running:
@@ -130,7 +155,8 @@ tanzu plugin list
 1. Create a registry secret by running:
     ```
     tanzu secret registry add tap-registry \
-    --username ${INSTALL_REGISTRY_USERNAME} --password ${INSTALL_REGISTRY_PASSWORD} \
+    --username ${INSTALL_REGISTRY_USERNAME} \
+    --password ${INSTALL_REGISTRY_PASSWORD} \
     --server ${INSTALL_REGISTRY_HOSTNAME} \
     --export-to-all-namespaces --yes --namespace tap-install
     ```
@@ -138,13 +164,13 @@ tanzu plugin list
 1. Add Tanzu Application Platform package repository to the cluster by running:
     ```
     tanzu package repository add tanzu-tap-repository \
-    --url registry.tanzu.vmware.com/tanzu-application-platform/tap-packages:1.0.1 \
+    --url registry.tanzu.vmware.com/tanzu-application-platform/tap-packages:${TAP_VERSION} \
     --namespace tap-install
     ```
     For example:
     ```
     $ tanzu package repository add tanzu-tap-repository \
-        --url registry.tanzu.vmware.com/tanzu-application-platform/tap-packages:1.0.1 \
+        --url gcr.io/${GKE_PROJECT}/tap-packages:${TAP_VERSION} \
         --namespace tap-install
     | Adding package repository 'tanzu-tap-repository'...
 
@@ -160,9 +186,9 @@ tanzu plugin list
     $ tanzu package repository get tanzu-tap-repository --namespace tap-install
     | Retrieving repository tap...
     NAME:          tanzu-tap-repository
-    VERSION:       4751491
+    VERSION:       530436
     REPOSITORY:    registry.tanzu.vmware.com/tanzu-application-platform/tap-packages
-    TAG:           1.0.1
+    TAG:           1.1.0
     STATUS:        Reconcile succeeded
     REASON:
     ```
@@ -184,7 +210,7 @@ tanzu plugin list
     ```
 3. Install TAP
     ```
-    tanzu package install tap -p tap.tanzu.vmware.com -v 1.0.1 --values-file tap-full-profile.yml -n tap-install
+    tanzu package install tap -p tap.tanzu.vmware.com -v 1.1.0 --values-file tap-full-profile.yml -n tap-install
     ```
 
 ## Create DNS Record

@@ -18,9 +18,12 @@ buildservice:
     }
   tanzunet_username: "your-tanzu-network-email@example.com"
   tanzunet_password: "your-tanzu-network-password"
-  descriptor_name: "tap-1.0.0-full"
+  descriptor_name: "lite"
   enable_automatic_dependency_updates: true
 supply_chain: basic
+
+cnrs:
+  domain_name: "tap.example.com"
 
 ootb_supply_chain_basic:
   registry:
