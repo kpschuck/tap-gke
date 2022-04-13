@@ -50,7 +50,7 @@ sudo su -
 gcloud container clusters create tap-cluster \
     --region=us-central1 \
     --release-channel=rapid \
-    --cluster-version=1.23.2-gke.300 \
+    --cluster-version=1.23.5-gke.200 \
     --num-nodes=2 \
     --machine-type=n2-highcpu-4 \
     --enable-autoprovisioning \
@@ -65,7 +65,7 @@ gcloud container clusters create tap-cluster \
 Export environment variables to be used in subsequent commands:
 ```
 export PIVNET_API_TOKEN=your-api-token
-export INSTALL_BUNDLE=registry.tanzu.vmware.com/tanzu-cluster-essentials/cluster-essentials-bundle@sha256:82dfaf70656b54dcba0d4def85ccae1578ff27054e7533d08320244af7fb0343
+export INSTALL_BUNDLE=registry.tanzu.vmware.com/tanzu-cluster-essentials/cluster-essentials-bundle@sha256:ab0a3539da241a6ea59c75c0743e9058511d7c56312ea3906178ec0f3491f51d
 export INSTALL_REGISTRY_HOSTNAME=registry.tanzu.vmware.com
 export INSTALL_REGISTRY_USERNAME=your-registry-username
 export INSTALL_REGISTRY_PASSWORD=your-registry-password
@@ -94,9 +94,9 @@ gcloud container clusters get-credentials tap-cluster --zone=us-central1
 
 ### Install Cluster Essentials for VMware Tanzu
 ```
-pivnet download-product-files --product-slug='tanzu-cluster-essentials' --release-version='1.0.0' --product-file-id=1105818
+pivnet download-product-files --product-slug='tanzu-cluster-essentials' --release-version='1.1.0' --product-file-id=1191987
 mkdir $HOME/tanzu-cluster-essentials
-tar -xvf tanzu-cluster-essentials-linux-amd64-1.0.0.tgz -C $HOME/tanzu-cluster-essentials
+tar -xvf tanzu-cluster-essentials-linux-amd64-1.1.0.tgz -C $HOME/tanzu-cluster-essentials
 cd $HOME/tanzu-cluster-essentials
 ./install.sh
 ```
